@@ -1,7 +1,7 @@
 resource "kubernetes_deployment" "tiller_deploy" {
   metadata {
     name      = "tiller-deploy"
-    namespace = "${var.namespace}"
+    namespace = "${kubernetes_service_account.tiller.metadata.0.namespace}"
 
     labels = {
       name = "tiller"
@@ -37,7 +37,7 @@ resource "kubernetes_deployment" "tiller_deploy" {
 
           env {
             name  = "TILLER_NAMESPACE"
-            value = "${var.namespace}"
+            value = "${kubernetes_service_account.tiller.metadata.0.namespace}"
           }
 
           env {
@@ -99,6 +99,7 @@ resource "kubernetes_deployment" "tiller_deploy" {
       } # spec
     } # template
   } # spec
+  depends_on = ["kubernetes_cluster_role_binding.tiller"]
 }
 
 #resource "kubernetes_service" "tiller_deploy" {
