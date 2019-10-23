@@ -1,9 +1,9 @@
 resource "kubernetes_deployment" "tiller_deploy" {
   metadata {
     name      = "tiller-deploy"
-    namespace = "${var.namespace}"
+    namespace = "${kubernetes_service_account.tiller.metadata.0.namespace}"
 
-    labels {
+    labels = {
       name = "tiller"
       app  = "helm"
     }
@@ -13,7 +13,7 @@ resource "kubernetes_deployment" "tiller_deploy" {
     replicas = 1
 
     selector {
-      match_labels {
+      match_labels = {
         name = "tiller"
         app  = "helm"
       }
@@ -21,7 +21,7 @@ resource "kubernetes_deployment" "tiller_deploy" {
 
     template {
       metadata {
-        labels {
+        labels = {
           name = "tiller"
           app  = "helm"
         }
@@ -37,7 +37,7 @@ resource "kubernetes_deployment" "tiller_deploy" {
 
           env {
             name  = "TILLER_NAMESPACE"
-            value = "${var.namespace}"
+            value = "${kubernetes_service_account.tiller.metadata.0.namespace}"
           }
 
           env {
@@ -94,9 +94,12 @@ resource "kubernetes_deployment" "tiller_deploy" {
         }
 
         service_account_name = "${kubernetes_service_account.tiller.metadata.0.name}"
+
+        node_selector = var.node_selector
       } # spec
     } # template
   } # spec
+  depends_on = ["kubernetes_cluster_role_binding.tiller"]
 }
 
 #resource "kubernetes_service" "tiller_deploy" {

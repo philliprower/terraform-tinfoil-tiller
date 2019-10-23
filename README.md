@@ -52,6 +52,7 @@ provider "helm" {
 | namespace | kubernetes namespace to deploy into | string | `"kube-system"` | no |
 | service\_account | kubernetes service account name | string | `"tiller"` | no |
 | tiller\_image | tiller docker image. | string | `"gcr.io/kubernetes-helm/tiller:v2.14.1"` | no |
+| node\_selector | node selector | map | empty map | no |
 
 ## Outputs
 
